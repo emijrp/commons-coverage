@@ -37,6 +37,11 @@ function init() {
 
     layerCoverage = new L.TileLayer.MaskCanvas({opacity: 0.5, radius: 500, useAbsoluteRadius: true});
     
+    layerImages = L.geoJson(null, {
+        pointToLayer: setImage,
+        }
+    );
+    
     // set the starting location for the centre of the map
     var start = new L.LatLng(0, 0);    
     
@@ -44,7 +49,7 @@ function init() {
     map = new L.Map('mapdiv', {        // use the div called mapdiv
         center: start,                // centre the map as above
         zoom: 2,                    // start up zoom level
-        layers: [layerOSM]        // layers to add 
+        layers: [layerOSM,layerImages]        // layers to add 
     });
     L.control.scale().addTo(map);
 
@@ -60,30 +65,40 @@ function init() {
 
     // add the overlays
     var overlays = {
-        "Coverage": layerCoverage
+        "Coverage": layerCoverage,
+        'Images': layerImages,
     };
     
     // add the layers to a layer control
     L.control.layers(baseLayers, overlays).addTo(map);
     
-    // create the hash url on the browser address line
-    var hash = new L.Hash(map);
-    
     var osmGeocoder = new L.Control.OSMGeocoder();
     map.addControl(osmGeocoder);
+    var hash = new L.Hash(map);
     
     map.on('moveend', whenMapMoves);
     askForCoverage();
+    askForImages();
 }
 
 function whenMapMoves(e) {
     askForCoverage();
+    askForImages();
 }
 
-function setMarker(feature,latlng) {
-    var monument; 
-    monument=L.marker(latlng);
-    return monument;
+function setImage(feature,latlng) {
+    var image;
+    var popuptext;
+    var thumb_url;
+    
+    thumb_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + feature.properties.md5.substring(0,1) + '/' + feature.properties.md5.substring(0,2) + '/' + feature.properties.image + '/150px-' + feature.properties.image;
+    popuptext = '<table border=0>';
+    popuptext = popuptext + '<tr><td>'+feature.properties.image.replace(/_/g,' ')+'</td></tr>';
+    popuptext = popuptext + '<tr><td><a href="https://commons.wikimedia.org/wiki/File:'+feature.properties.image+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>';
+    popuptext = popuptext + '</table>';
+    image=L.marker(latlng);
+    image.bindPopup(popuptext);
+    return image;
 }
 
 function askForCoverage() {
@@ -97,8 +112,24 @@ function askForCoverage() {
     });
 }
 
+function askForImages() {
+    if (map.getZoom() < 10) { return }
+    
+    var data='bbox=' + map.getBounds().toBBoxString();
+    $.ajax({
+        url: 'ajaximages.php',
+        dataType: 'json',
+        data: data,
+        success: showImages
+    });
+}
+
 function showCoverage(ajaxresponse) {
     //layerCoverage.clearLayers(); //falla
     layerCoverage.setData(ajaxresponse);
     document.getElementById('wait').style.display = 'none';
+}
+
+function showImages(ajaxresponse) {
+    layerImages.addData(ajaxresponse);
 }
