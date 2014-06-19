@@ -92,7 +92,7 @@ function setImage(feature,latlng) {
     var thumb_url;
     
     thumb_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + feature.properties.md5.substring(0,1) + '/' + feature.properties.md5.substring(0,2) + '/' + feature.properties.image + '/150px-' + feature.properties.image;
-    popuptext = '<table border=0>';
+    popuptext = '<table border=0 width=150px>';
     popuptext = popuptext + '<tr><td>'+feature.properties.image.replace(/_/g,' ')+'</td></tr>';
     popuptext = popuptext + '<tr><td><a href="https://commons.wikimedia.org/wiki/File:'+feature.properties.image+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>';
     popuptext = popuptext + '</table>';
