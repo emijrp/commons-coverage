@@ -108,26 +108,21 @@ function setImage(feature,latlng) {
                 dataType: 'text',
                 data: 'file='+feature.properties.image,
                 success: function(result) {
-                    var author = result.match(/author *= *([^\n]*)/i);
-                    if (author.length == 2) { author = author[1]; } else { author = ''; }
+                    var author = result.match(/\|\s*author\s*=([^\n\r]*)/i);
+                    if (author.length == 2) { author = $.trim(author[1]); } else { author = 'n/d'; }
                     popuptext = popuptext.replace('__AUTHOR__', wiki2html(author));
                     
-                    var date = result.match(/date *= *([^\n]*)/i);
-                    if (date.length == 2) { date = date[1]; } else { date = ''; }
+                    var date = result.match(/\|\s*date\s*=([^\n\r]*)/i);
+                    if (date.length == 2) { date = $.trim(date[1]); } else { date = 'n/d'; }
                     popuptext = popuptext.replace('__DATE__', date);
                     
-                    var description = result.match(/description *= *([^\n]*)/i);
-                    if (description.length == 2) { description = description[1]; } else { description = ''; }
-                    popuptext = popuptext.replace('__DESCRIPTION__', description);
+                    var description = result.match(/\|\s*description\s*=([^\n\r]*)/i);
+                    if (description.length == 2) { description = $.trim(description[1]); } else { description = 'n/d'; }
+                    popuptext = popuptext.replace('__DESCRIPTION__', wiki2html(description));
                     
                     image.setPopupContent(popuptext);
                 }
             });
-            var author;
-            
-            
-            //popuptext = popuptext.replace('__DATE__', '___DATE___');
-            
         });
     image.bindPopup(popuptext);
     return image;
@@ -142,6 +137,14 @@ function wiki2html (wiki) {
     html = html.replace(/\[\[([^\[\]]+)\]\]/ig, '<a href="https://commons.wikimedia.org/wiki/$1" target="_blank">$1<\/a>');
     //later [http:// links]
     html = html.replace(/\[([^\[\] ]+) ([^\[\]]+)\]/ig, '<a href="$1" target="_blank">$2<\/a>');
+    
+    //bold
+    html = html.replace(/'''([^']+)'''/ig, '<b>$1</b>');
+    //italic
+    html = html.replace(/''([^']+)''/ig, '<i>$1</i>');
+    
+    //remove {{lang|1=}} templates
+    html = html.replace(/\{\{\s*[a-z-]{2,5}\s*\|\s*1\s*=\s*([^\{\}]+?)\s*\}\}/ig, '$1');
     
     return html;
 }
