@@ -52,9 +52,7 @@ function init() {
         layers: [layerOSM,layerImages]        // layers to add 
     });
     L.control.scale().addTo(map);
-
-    layerCoverage.setData([[89,-179],[-89,179]]);
-    map.fitBounds(layerCoverage.bounds);
+    
     map.addLayer(layerCoverage);
 
     // create a layer control
@@ -89,14 +87,46 @@ function whenMapMoves(e) {
 function setImage(feature,latlng) {
     var image;
     var popuptext;
+    var image_url;
     var thumb_url;
     
+    image_url = 'https://commons.wikimedia.org/wiki/File:'+feature.properties.image;
     thumb_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + feature.properties.md5.substring(0,1) + '/' + feature.properties.md5.substring(0,2) + '/' + feature.properties.image + '/150px-' + feature.properties.image;
-    popuptext = '<table border=0 width=150px>';
-    popuptext = popuptext + '<tr><td>'+feature.properties.image.replace(/_/g,' ')+'</td></tr>';
-    popuptext = popuptext + '<tr><td><a href="https://commons.wikimedia.org/wiki/File:'+feature.properties.image+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>';
+    popuptext = '<table border=0 width=300px style="text-align: left;">';
+    popuptext = popuptext + '<tr><td colspan=2><b><a href="'+image_url+'" target="_blank">'+feature.properties.image.replace(/_/g,' ')+'</a></b></td></tr>';
+    popuptext = popuptext + '<tr><td><a href="'+image_url+'" target="_blank"><img src="'+thumb_url+'" /></a></td>';
+    popuptext = popuptext + '<td valign=top><b>Coordinates:</b><br/>'+latlng.lat+', '+latlng.lng;
+    popuptext = popuptext + '<br/><b>Author:</b><br/>__AUTHOR__';
+    popuptext = popuptext + '<br/><b>Date:</b><br/>__DATE__';
+    popuptext = popuptext + '</td></tr>';
+    popuptext = popuptext + '<tr><td colspan=2><b>Description:</b><br/>__DESCRIPTION__</td></tr>';
     popuptext = popuptext + '</table>';
-    image=L.marker(latlng);
+    image=L.marker(latlng).on('click', function () {
+            var wikiraw;
+            wikiraw = '';
+            $.ajax({
+                url: 'ajaxwikiraw.php',
+                dataType: 'text',
+                data: 'file='+feature.properties.image,
+                success: function(result) {
+                    var author = result.match(/author *= *([^\n]*)/i);
+                    if (author.length == 2) { author = author[1]; } else { author = ''; }
+                    popuptext = popuptext.replace('__AUTHOR__', author);
+                    var date = result.match(/date *= *([^\n]*)/i);
+                    if (date.length == 2) { date = date[1]; } else { date = ''; }
+                    popuptext = popuptext.replace('__DATE__', date);
+                    var description = result.match(/description *= *([^\n]*)/i);
+                    if (description.length == 2) { description = description[1]; } else { description = ''; }
+                    popuptext = popuptext.replace('__DESCRIPTION__', description);
+                    image.setPopupContent(popuptext);
+                }
+            });
+            var author;
+            
+            
+            //popuptext = popuptext.replace('__DATE__', '___DATE___');
+            
+        });
     image.bindPopup(popuptext);
     return image;
 }
@@ -131,5 +161,6 @@ function showCoverage(ajaxresponse) {
 }
 
 function showImages(ajaxresponse) {
+    layerImages.clearLayers();
     layerImages.addData(ajaxresponse);
 }
