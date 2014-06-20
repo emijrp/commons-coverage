@@ -109,15 +109,15 @@ function setImage(feature,latlng) {
                 data: 'file='+feature.properties.image,
                 success: function(result) {
                     var author = result.match(/\|\s*author\s*=([^\n\r]*)/i);
-                    if (author.length == 2) { author = $.trim(author[1]); } else { author = 'n/d'; }
+                    if (author.length == 2 && $.trim(author[1])) { author = $.trim(author[1]); } else { author = 'n/d'; }
                     popuptext = popuptext.replace('__AUTHOR__', wiki2html(author));
                     
                     var date = result.match(/\|\s*date\s*=([^\n\r]*)/i);
-                    if (date.length == 2) { date = $.trim(date[1]); } else { date = 'n/d'; }
+                    if (date.length == 2 && $.trim(date[1])) { date = $.trim(date[1]); } else { date = 'n/d'; }
                     popuptext = popuptext.replace('__DATE__', date);
                     
                     var description = result.match(/\|\s*description\s*=([^\n\r]*)/i);
-                    if (description.length == 2) { description = $.trim(description[1]); } else { description = 'n/d'; }
+                    if (description.length == 2 && $.trim(description[1])) { description = $.trim(description[1]); } else { description = 'n/d'; }
                     popuptext = popuptext.replace('__DESCRIPTION__', wiki2html(description));
                     
                     image.setPopupContent(popuptext);
@@ -144,7 +144,7 @@ function wiki2html (wiki) {
     html = html.replace(/''([^']+)''/ig, '<i>$1</i>');
     
     //remove {{lang|1=}} templates
-    html = html.replace(/\{\{\s*[a-z-]{2,5}\s*\|\s*1\s*=\s*([^\{\}]+?)\s*\}\}/ig, '$1');
+    html = html.replace(/\{\{\s*[a-z-]{2,5}\s*\|\s*1?\s*=?\s*([^\{\}]+?)\s*\}\}/ig, '$1');
     
     return html;
 }
