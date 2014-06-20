@@ -12,6 +12,7 @@ TODO
 
   * i18n
   * add markers for images without coordinates
+  * search images without coordinates using the bst categories of the region (most used categories by other markers)
   * statistics of coverage per level
   * geolocated wikipedia articles in other layer (with different icons)
   * bar to control the number of nodes
