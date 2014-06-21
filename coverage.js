@@ -22,6 +22,7 @@ var layerCoverage; // the geoJson layer to display monuments with
 var featuredicon;
 var qualityicon;
 var normalicon;
+var sidebar;
 
 // when the whole document has loaded call the init function
 $(document).ready(init);
@@ -87,7 +88,7 @@ function init() {
     var hash = new L.Hash(map);
     
     // sidebar
-    var sidebar = L.control.sidebar('sidebar', {
+    sidebar = L.control.sidebar('sidebar', {
         position: 'left',
         autoPan: false,
     });
