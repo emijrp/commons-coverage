@@ -97,17 +97,25 @@ function init() {
         sidebar.show();
     }, 500);
     sidebar.setContent('<h1>Commons Coverage</h1><b>Welcome!</b> ' + 
-        'This project visualizes <a href="https://commons.wikimedia.org/wiki/Commons:Geocoding" target="_blank">geolocated</a> images in <a href="http://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>. Imagine a world in which every single image is surrounded by other less than 1 km far away. Explore your region and discover places without pictures.' + 
+        'This project visualizes <a href="https://commons.wikimedia.org/wiki/Commons:Geocoding" target="_blank">geolocated</a> images in <a href="http://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>. Imagine a world in which every single free image is surrounded by other less than 1 km far away. Explore your region and discover places without pictures.' + 
         '<h2>Statistics</h2>' + 
         '<table class="wikitable">' + 
-        '<tr><th>Uncovered circles</th><td id="stats-uncovered-circles"></td></tr>' + 
+        '<tr><th>Featured</th><td id="stats-featured-images"></td>' + 
+        '<th>Quality</th><td id="stats-quality-images"></td>' + 
+        '<th>Total images</th><td id="stats-total-images"></td></tr>' + 
         '</table>' +
+        '<h2>Geolocate an image</h2>' + 
+        'Add coordinates to an image in Wikimedia Commons:' +
+        '<ul><li>...</li></ul>' +
+        '<h2>Move marker to new location</h2>' + 
+        'Modify coordinates of an image dragging the marker:' + 
+        '<ul><li>...</li></ul>' +
         ''
         );
     
     map.on('moveend', whenMapMoves);
     askForCoverage();
-    askForImages();
+    askForImageMarkers();
 }
 
 function whenMapMoves(e) {
@@ -136,11 +144,11 @@ function setImageMarker(feature,latlng) {
                 '<tr><td colspan=2><b>Description:</b><br/>__DESCRIPTION__<br/><b>Categories:</b> __CATEGORIES__</td></tr>' + 
                 '</table>';
     
-    if (feature.properties.featured == '1') {
+    if (feature.properties.f == '1') {
         icon = featuredicon;
         title = '"'+feature.properties.image.replace(/_/g,' ')+'" is a featured picture';
         zIndex = 1100;
-    } else if (feature.properties.quality == '1') {
+    } else if (feature.properties.q == '1') {
         icon = qualityicon;
         title = '"'+feature.properties.image.replace(/_/g,' ')+'" is a quality picture';
         zIndex = 1050;
@@ -149,9 +157,7 @@ function setImageMarker(feature,latlng) {
         title = '"'+feature.properties.image.replace(/_/g,' ')+'"';
     }
     
-    image=L.marker(latlng, {icon: icon, title: title, zIndexOffset: zIndex}).on('click', function () {
-            var wikiraw;
-            wikiraw = '';
+    image=L.marker(latlng, {icon: icon, title: title, zIndexOffset: zIndex}).on('popupopen', function () {
             $.ajax({
                 url: 'ajaxwikiraw.php',
                 dataType: 'text',
@@ -233,11 +239,23 @@ function askForImageMarkers() {
 function showCoverage(ajaxresponse) {
     //layerCoverage.clearLayers(); //falla
     layerCoverage.setData(ajaxresponse);
-    $('#stats-uncovered-circles').text(ajaxresponse.length);
+    $('#stats-total-images').text(ajaxresponse.length);
     document.getElementById('wait').style.display = 'none';
 }
 
 function showImageMarkers(ajaxresponse) {
+    var featured = 0;
+    var quality = 0;
+    
     layerImages.clearLayers();
+    for (i=0; i<ajaxresponse['features'].length; i++) {
+        if (ajaxresponse['features'][i]['properties']['f'] == '1') {
+            featured += 1;
+        } else if (ajaxresponse['features'][i]['properties']['q'] == '1') {
+            quality += 1;
+        }
+    }
+    $('#stats-featured-images').text(featured);
+    $('#stats-quality-images').text(quality);
     layerImages.addData(ajaxresponse);
 }

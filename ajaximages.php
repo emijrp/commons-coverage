@@ -121,14 +121,14 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $prop['image']=str_replace(' ', '_', $row['page_title']);
     $prop['md5']=substr(md5($prop['image']),0,2);
     if (in_array($prop['image'], $featured)){
-        $prop['featured']=1;
+        $prop['f']=1;
     }else{
-        $prop['featured']=0;
+        $prop['f']=0;
     }
     if (in_array($prop['image'], $quality)){
-        $prop['quality']=1;
+        $prop['q']=1;
     }else{
-        $prop['quality']=0;
+        $prop['q']=0;
     }
 
     $f=array();
