@@ -56,14 +56,11 @@ function init() {
         }
     );
     
-    // set the starting location for the centre of the map
-    var start = new L.LatLng(0, 0);    
-    
     // create the map
-    map = new L.Map('mapdiv', {        // use the div called mapdiv
-        center: start,                // centre the map as above
-        zoom: 2,                    // start up zoom level
-        layers: [layerOSM,layerImages]        // layers to add 
+    map = new L.Map('mapdiv', {
+        center: new L.LatLng(0, 0),
+        zoom: 2,
+        layers: [layerOSM,layerImages]
     });
     L.control.scale().addTo(map);
     
@@ -109,14 +106,14 @@ function setImageMarker(feature,latlng) {
     
     image_url = 'https://commons.wikimedia.org/wiki/File:'+feature.properties.image;
     thumb_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + feature.properties.md5.substring(0,1) + '/' + feature.properties.md5.substring(0,2) + '/' + feature.properties.image + '/150px-' + feature.properties.image;
-    popuptext = '<table border=0 width=300px style="text-align: left;">';
-    popuptext = popuptext + '<tr><td colspan=2><b><a href="'+image_url+'" target="_blank">'+feature.properties.image.replace(/_/g,' ')+'</a></b></td></tr>';
-    popuptext = popuptext + '<tr><td valign=top><b>Coordinates:</b><br/>'+latlng.lat+', '+latlng.lng;
-    popuptext = popuptext + '<br/><b>Author:</b><br/>__AUTHOR__';
-    popuptext = popuptext + '<br/><b>Date:</b><br/>__DATE__</td>';
-    popuptext = popuptext + '<td><a href="'+image_url+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>';
-    popuptext = popuptext + '<tr><td colspan=2><b>Description:</b><br/>__DESCRIPTION__</td></tr>';
-    popuptext = popuptext + '</table>';
+    popuptext = '<table border=0 width=300px style="text-align: left;">'
+                + '<tr><td colspan=2><b><a href="'+image_url+'" target="_blank">'+feature.properties.image.replace(/_/g,' ')+'</a></b></td></tr>'
+                + '<tr><td valign=top><b>Coordinates:</b><br/>'+latlng.lat+', '+latlng.lng
+                + '<br/><b>Author:</b><br/>__AUTHOR__'
+                + '<br/><b>Date:</b><br/>__DATE__</td>'
+                + '<td><a href="'+image_url+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>'
+                + '<tr><td colspan=2><b>Description:</b><br/>__DESCRIPTION__<br/><b>Categories:</b> __CATEGORIES__</td></tr>'
+                + '</table>';
     
     if (feature.properties.featured == '1') {
         icon = featuredicon;
@@ -150,6 +147,15 @@ function setImageMarker(feature,latlng) {
                     var description = result.match(/\|\s*description\s*=([^\n\r]*)/i);
                     if (description.length == 2 && $.trim(description[1])) { description = $.trim(description[1]); } else { description = 'n/d'; }
                     popuptext = popuptext.replace('__DESCRIPTION__', wiki2html(description));
+                    
+                    var categories = new Array();
+                    var regexp = /\[\[\s*Category\s*:\s*([^\n\r\[\]\|]+)\s*[\|\]]/ig;
+                    var match = regexp.exec(result);
+                    while (match != null) {
+                        categories.push('<a href="https://commons.wikimedia.org/wiki/Category:' + $.trim(match[1]) + '" target="_blank">' + $.trim(match[1]) + '</a>');
+                        match = regexp.exec(result);
+                    }
+                    popuptext = popuptext.replace('__CATEGORIES__', categories.join(', '));
                     
                     image.setPopupContent(popuptext);
                 }

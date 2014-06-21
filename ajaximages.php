@@ -20,8 +20,8 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 /*
- * ajaxmonuments.php
- * returns monuments points as geojson 
+ * ajaximages.php
+ * returns images points as geojson 
  */
 
 if (isset($_GET['bbox'])) {
