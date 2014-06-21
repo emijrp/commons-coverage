@@ -110,7 +110,8 @@ function setImageMarker(feature,latlng) {
                 + '<tr><td colspan=2><b><a href="'+image_url+'" target="_blank">'+feature.properties.image.replace(/_/g,' ')+'</a></b></td></tr>'
                 + '<tr><td valign=top><b>Coordinates:</b><br/>'+latlng.lat+', '+latlng.lng
                 + '<br/><b>Author:</b><br/>__AUTHOR__'
-                + '<br/><b>Date:</b><br/>__DATE__</td>'
+                + '<br/><b>Date:</b><br/>__DATE__'
+                + '<br/><b>License:</b><br/>__LICENSE__</td>'
                 + '<td><a href="'+image_url+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>'
                 + '<tr><td colspan=2><b>Description:</b><br/>__DESCRIPTION__<br/><b>Categories:</b> __CATEGORIES__</td></tr>'
                 + '</table>';
