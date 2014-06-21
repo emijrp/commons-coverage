@@ -6,6 +6,8 @@ body{
     font-size: 82%;
     margin: 2px;
     height: 100%;
+    overflow-y:hidden;
+    overflow-x:hidden;
 }
 #mapdiv {
     width: 100%;
