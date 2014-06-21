@@ -81,9 +81,28 @@ function init() {
     // add the layers to a layer control
     L.control.layers(baseLayers, overlays).addTo(map);
     
+    // locations searcher
     var osmGeocoder = new L.Control.OSMGeocoder();
     map.addControl(osmGeocoder);
     var hash = new L.Hash(map);
+    
+    // sidebar
+    var sidebar = L.control.sidebar('sidebar', {
+        position: 'left',
+        autoPan: false,
+    });
+    map.addControl(sidebar);
+    setTimeout(function () {
+        sidebar.show();
+    }, 500);
+    sidebar.setContent('<h1>Commons Coverage</h1><b>Welcome!</b> ' + 
+        'This project visualizes <a href="https://commons.wikimedia.org/wiki/Commons:Geocoding" target="_blank">geolocated</a> images in <a href="http://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>. Imagine a world in which every single image is surrounded by other less than 1 km far away. Explore your region and discover places without pictures.' + 
+        '<h2>Statistics</h2>' + 
+        '<table class="wikitable">' + 
+        '<tr><th>Uncovered circles</th><td id="stats-uncovered-circles"></td></tr>' + 
+        '</table>' +
+        ''
+        );
     
     map.on('moveend', whenMapMoves);
     askForCoverage();
@@ -92,7 +111,7 @@ function init() {
 
 function whenMapMoves(e) {
     askForCoverage();
-    askForImages();
+    askForImageMarkers();
 }
 
 function setImageMarker(feature,latlng) {
@@ -106,15 +125,15 @@ function setImageMarker(feature,latlng) {
     
     image_url = 'https://commons.wikimedia.org/wiki/File:'+feature.properties.image;
     thumb_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + feature.properties.md5.substring(0,1) + '/' + feature.properties.md5.substring(0,2) + '/' + feature.properties.image + '/150px-' + feature.properties.image;
-    popuptext = '<table border=0 width=300px style="text-align: left;">'
-                + '<tr><td colspan=2><b><a href="'+image_url+'" target="_blank">'+feature.properties.image.replace(/_/g,' ')+'</a></b></td></tr>'
-                + '<tr><td valign=top><b>Coordinates:</b><br/>'+latlng.lat+', '+latlng.lng
-                + '<br/><b>Author:</b><br/>__AUTHOR__'
-                + '<br/><b>Date:</b><br/>__DATE__'
-                + '<br/><b>License:</b><br/>__LICENSE__</td>'
-                + '<td><a href="'+image_url+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>'
-                + '<tr><td colspan=2><b>Description:</b><br/>__DESCRIPTION__<br/><b>Categories:</b> __CATEGORIES__</td></tr>'
-                + '</table>';
+    popuptext = '<table border=0 width=300px style="text-align: left;">' + 
+                '<tr><td colspan=2><b><a href="'+image_url+'" target="_blank">'+feature.properties.image.replace(/_/g,' ')+'</a></b></td></tr>' + 
+                '<tr><td valign=top><b>Coordinates:</b><br/>'+latlng.lat+', '+latlng.lng + 
+                '<br/><b>Author:</b><br/>__AUTHOR__' + 
+                '<br/><b>Date:</b><br/>__DATE__' + 
+                '<br/><b>License:</b><br/>__LICENSE__</td>' + 
+                '<td><a href="'+image_url+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>' + 
+                '<tr><td colspan=2><b>Description:</b><br/>__DESCRIPTION__<br/><b>Categories:</b> __CATEGORIES__</td></tr>' + 
+                '</table>';
     
     if (feature.properties.featured == '1') {
         icon = featuredicon;
@@ -198,7 +217,7 @@ function askForCoverage() {
     });
 }
 
-function askForImages() {
+function askForImageMarkers() {
     if (map.getZoom() < 10) { return }
     
     var data='bbox=' + map.getBounds().toBBoxString();
@@ -206,17 +225,18 @@ function askForImages() {
         url: 'ajaximages.php',
         dataType: 'json',
         data: data,
-        success: showImages
+        success: showImageMarkers
     });
 }
 
 function showCoverage(ajaxresponse) {
     //layerCoverage.clearLayers(); //falla
     layerCoverage.setData(ajaxresponse);
+    $('#stats-uncovered-circles').text(ajaxresponse.length);
     document.getElementById('wait').style.display = 'none';
 }
 
-function showImages(ajaxresponse) {
+function showImageMarkers(ajaxresponse) {
     layerImages.clearLayers();
     layerImages.addData(ajaxresponse);
 }

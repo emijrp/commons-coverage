@@ -58,7 +58,7 @@ try {
 
 try {
     $limit = 20000;
-    $sql="SELECT gt_lat, gt_lon FROM geo_tags WHERE gt_lon>=:left AND gt_lon<=:right AND gt_lat>=:bottom AND gt_lat<=:top LIMIT ".$limit;
+    $sql="SELECT DISTINCT gt_lat, gt_lon FROM geo_tags WHERE gt_lon>=:left AND gt_lon<=:right AND gt_lat>=:bottom AND gt_lat<=:top LIMIT ".$limit;
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':left', $left, PDO::PARAM_STR);
     $stmt->bindParam(':right', $right, PDO::PARAM_STR);

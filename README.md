@@ -17,4 +17,5 @@ TODO
   * geolocated wikipedia articles in other layer (with different icons)
   * bar to control the number of nodes
   * bar to control the opacity
+  * export data
 
