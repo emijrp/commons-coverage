@@ -27,31 +27,21 @@ var normalicon;
 $(document).ready(init);
 
 function init() {
-    // map stuff
-    // base layer
     var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';    
     var osmAttrib='Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors | <a href="https://commons.wikimedia.org/" target="_blank">Images database</a> by Commons editors | <a href="https://github.com/emijrp/commons-coverage" target="_blank">Source code</a> in GitHub';
     
-    // markericons
-    featuredicon=L.icon({
-        iconUrl: 'leaflet/images/featuredicon.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 20],
-        popupAnchor: [0, -20]
+    // marker icons
+    var LeafIcon = L.Icon.extend({
+        options: {
+            iconSize: [25, 41],
+            iconAnchor: [12, 40],
+            popupAnchor: [1, -30]
+        }
     });
-    qualityicon=L.icon({
-        iconUrl: 'leaflet/images/qualityicon.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 20],
-        popupAnchor: [0, -20]
-    });
-    normalicon=L.icon({
-        iconUrl: 'leaflet/images/normalicon.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 20],
-        popupAnchor: [0, -20]
-    });
-    
+    featuredicon=new LeafIcon({iconUrl: 'leaflet/images/featuredicon.png'});
+    qualityicon=new LeafIcon({iconUrl: 'leaflet/images/qualityicon.png'});
+    normalicon=new LeafIcon({iconUrl: 'leaflet/images/normalicon.png'});
+
     // layers
     layerOSM = new L.TileLayer(osmUrl, {
         minZoom: 2, 
