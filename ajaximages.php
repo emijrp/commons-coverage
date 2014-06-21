@@ -56,9 +56,43 @@ try {
     sendajax($ajaxres);
 }
 
+// get featured and quality images for this region
+try {
+    $sql="SELECT page_title, cl_to FROM geo_tags, page, categorylinks WHERE gt_page_id=page_id AND cl_from=page_id AND page_namespace=6 AND gt_lon>=:left AND gt_lon<=:right AND gt_lat>=:bottom AND gt_lat<=:top AND (cl_to='Featured_pictures_on_Wikimedia_Commons' OR cl_to='Quality_images')";
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':left', $left, PDO::PARAM_STR);
+    $stmt->bindParam(':right', $right, PDO::PARAM_STR);
+    $stmt->bindParam(':bottom', $bottom, PDO::PARAM_STR);
+    $stmt->bindParam(':top', $top, PDO::PARAM_STR);
+    $stmt->execute();
+} catch(PDOException $e) {
+    // send the PDOException message
+    $ajaxres=array();
+    $ajaxres['resp']=40;
+    $ajaxres['dberror']=$e->getCode();
+    $ajaxres['msg']=$e->getMessage();
+    sendajax($ajaxres);
+}
+
+$featured=array();
+$quality=array();
+
+// go through the list adding each one to the array to be returned    
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $page_title=$row['page_title'];
+    $cl_to=$row['cl_to'];
+    
+    if ($cl_to == 'Featured_pictures_on_Wikimedia_Commons') {
+        $featured[]=$page_title;
+    }else if ($cl_to == 'Quality_images') {
+        $quality[]=$page_title;
+    }
+}
+
+// get all images for this region
 try {
     $limit = 250;
-    $sql="SELECT gt_lat, gt_lon, page_title, page_random FROM geo_tags, page WHERE gt_page_id=page_id AND page_namespace=6 AND gt_lon>=:left AND gt_lon<=:right AND gt_lat>=:bottom AND gt_lat<=:top ORDER BY page_random LIMIT ".$limit;
+    $sql="SELECT page_title, gt_lat, gt_lon, page_random FROM geo_tags, page WHERE gt_page_id=page_id AND page_namespace=6 AND gt_lon>=:left AND gt_lon<=:right AND gt_lat>=:bottom AND gt_lat<=:top ORDER BY page_random LIMIT ".$limit;
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':left', $left, PDO::PARAM_STR);
     $stmt->bindParam(':right', $right, PDO::PARAM_STR);
@@ -86,6 +120,16 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $prop=array();
     $prop['image']=str_replace(' ', '_', $row['page_title']);
     $prop['md5']=substr(md5($prop['image']),0,2);
+    if (in_array($prop['image'], $featured)){
+        $prop['featured']=1;
+    }else{
+        $prop['featured']=0;
+    }
+    if (in_array($prop['image'], $quality)){
+        $prop['quality']=1;
+    }else{
+        $prop['quality']=0;
+    }
 
     $f=array();
     $geom=array();

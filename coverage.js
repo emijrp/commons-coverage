@@ -19,6 +19,9 @@
 var map; // global map object
 var layerOSM; // the Mapnik base layer of the map
 var layerCoverage; // the geoJson layer to display monuments with
+var featuredicon;
+var qualityicon;
+var normalicon;
 
 // when the whole document has loaded call the init function
 $(document).ready(init);
@@ -29,6 +32,27 @@ function init() {
     var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';    
     var osmAttrib='Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors | <a href="https://commons.wikimedia.org/" target="_blank">Images database</a> by Commons editors | <a href="https://github.com/emijrp/commons-coverage" target="_blank">Source code</a> in GitHub';
     
+    // markericons
+    featuredicon=L.icon({
+        iconUrl: 'leaflet/images/featuredicon.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 20],
+        popupAnchor: [0, -20]
+    });
+    qualityicon=L.icon({
+        iconUrl: 'leaflet/images/qualityicon.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 20],
+        popupAnchor: [0, -20]
+    });
+    normalicon=L.icon({
+        iconUrl: 'leaflet/images/normalicon.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 20],
+        popupAnchor: [0, -20]
+    });
+    
+    // layers
     layerOSM = new L.TileLayer(osmUrl, {
         minZoom: 2, 
         maxZoom: 19, 
@@ -38,7 +62,7 @@ function init() {
     layerCoverage = new L.TileLayer.MaskCanvas({opacity: 0.5, radius: 500, useAbsoluteRadius: true});
     
     layerImages = L.geoJson(null, {
-        pointToLayer: setImage,
+        pointToLayer: setImageMarker,
         }
     );
     
@@ -84,7 +108,9 @@ function whenMapMoves(e) {
     askForImages();
 }
 
-function setImage(feature,latlng) {
+function setImageMarker(feature,latlng) {
+    var icon;
+    var title;
     var image;
     var popuptext;
     var image_url;
@@ -100,7 +126,19 @@ function setImage(feature,latlng) {
     popuptext = popuptext + '<td><a href="'+image_url+'" target="_blank"><img src="'+thumb_url+'" /></a></td></tr>';
     popuptext = popuptext + '<tr><td colspan=2><b>Description:</b><br/>__DESCRIPTION__</td></tr>';
     popuptext = popuptext + '</table>';
-    image=L.marker(latlng).on('click', function () {
+    
+    if (feature.properties.featured == '1') {
+        icon = featuredicon;
+        title = '"'+feature.properties.image.replace(/_/g,' ')+'" is a featured picture';
+    } else if (feature.properties.quality == '1') {
+        icon = qualityicon;
+        title = '"'+feature.properties.image.replace(/_/g,' ')+'" is a quality picture';
+    } else {
+        icon = normalicon;
+        title = '"'+feature.properties.image.replace(/_/g,' ')+'"';
+    }
+    
+    image=L.marker(latlng, {icon: icon, title: title}).on('click', function () {
             var wikiraw;
             wikiraw = '';
             $.ajax({
