@@ -115,6 +115,7 @@ function setImageMarker(feature,latlng) {
     var popuptext;
     var image_url;
     var thumb_url;
+    var zIndex;
     
     image_url = 'https://commons.wikimedia.org/wiki/File:'+feature.properties.image;
     thumb_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + feature.properties.md5.substring(0,1) + '/' + feature.properties.md5.substring(0,2) + '/' + feature.properties.image + '/150px-' + feature.properties.image;
@@ -130,15 +131,17 @@ function setImageMarker(feature,latlng) {
     if (feature.properties.featured == '1') {
         icon = featuredicon;
         title = '"'+feature.properties.image.replace(/_/g,' ')+'" is a featured picture';
+        zIndex = 1100;
     } else if (feature.properties.quality == '1') {
         icon = qualityicon;
         title = '"'+feature.properties.image.replace(/_/g,' ')+'" is a quality picture';
+        zIndex = 1050;
     } else {
         icon = normalicon;
         title = '"'+feature.properties.image.replace(/_/g,' ')+'"';
     }
     
-    image=L.marker(latlng, {icon: icon, title: title}).on('click', function () {
+    image=L.marker(latlng, {icon: icon, title: title, zIndexOffset: zIndex}).on('click', function () {
             var wikiraw;
             wikiraw = '';
             $.ajax({
