@@ -124,7 +124,7 @@ function setImage(feature,latlng) {
                 }
             });
         });
-    image.bindPopup(popuptext);
+    image.bindPopup(popuptext, {minWidth: 300});
     return image;
 }
 
