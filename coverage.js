@@ -106,10 +106,13 @@ function init() {
         '</table>' +
         '<h2>Geolocate an image</h2>' + 
         'Add coordinates to an image in Wikimedia Commons:' +
-        '<ul><li>...</li></ul>' +
+        '<ul><li>TODO</li></ul>' +
         '<h2>Move marker to new location</h2>' + 
         'Modify coordinates of an image dragging the marker:' + 
-        '<ul><li>...</li></ul>' +
+        '<ul><li>TODO</li></ul>' +
+        '<h2>See also</h2>' + 
+        '<ul><li><a href="https://en.wikipedia.org/wiki/User:Emijrp/All_human_knowledge">All human knowledge</a></li>' +
+        '<li><a href="http://tools.wmflabs.org/wmcounter/">Wikimedia projects edit counter</a></li></ul>' +
         ''
         );
     
