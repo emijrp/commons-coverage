@@ -1,7 +1,9 @@
 commons-coverage
 ================
 
-A map for Wikimedia Commons coverage http://tools.wmflabs.org/commons-coverage/ I would like a Wikimedia Commons with one image per km2 at least.
+A map for Wikimedia Commons coverage. I would like a Wikimedia Commons with one image per km2 at least.
+
+It is available in http://tools.wmflabs.org/commons-coverage/
 
 It is inspired by [Geograph Britain and Ireland](http://www.geograph.org.uk).
 
