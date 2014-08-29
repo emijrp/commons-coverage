@@ -29,7 +29,7 @@ $(document).ready(init);
 
 function init() {
     var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';    
-    var osmAttrib='Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors | <a href="https://commons.wikimedia.org/" target="_blank">Images database</a> by Commons editors | <a href="https://github.com/emijrp/commons-coverage" target="_blank">Source code</a> in GitHub';
+    var osmAttrib='Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors | <a href="https://commons.wikimedia.org/" target="_blank">Images database</a> by Commons editors | <a href="https://github.com/emijrp/commons-coverage" target="_blank">Source code</a> by <a href="https://en.wikipedia.org/wiki/User:Emijrp" target="_blank">emijrp</a> in GitHub';
     
     // marker icons
     var LeafIcon = L.Icon.extend({
