@@ -28,7 +28,8 @@ var sidebar;
 $(document).ready(init);
 
 function init() {
-    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';    
+    //var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';    
+    var osmUrl='https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png';    
     var osmAttrib='Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors | <a href="https://commons.wikimedia.org/" target="_blank">Images database</a> by Commons editors | <a href="https://github.com/emijrp/commons-coverage" target="_blank">Source code</a> by <a href="https://en.wikipedia.org/wiki/User:Emijrp" target="_blank">emijrp</a> in GitHub';
     
     // marker icons
@@ -97,22 +98,31 @@ function init() {
         sidebar.show();
     }, 500);
     sidebar.setContent('<h1>Commons Coverage</h1><b>Welcome!</b> ' + 
-        'This project visualizes <a href="https://commons.wikimedia.org/wiki/Commons:Geocoding" target="_blank">geolocated</a> images in <a href="http://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>. Imagine a world in which every single free image is surrounded by other less than 1 km far away. Explore your region and discover places without pictures.' + 
+        'This project visualizes <a href="https://commons.wikimedia.org/wiki/Commons:Geocoding" target="_blank">geolocated</a> images in <a href="http://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>.<br/><br/>Imagine a world in which every single free image is surrounded by other less than 1 km far away.<br/><br/>Explore your region and discover places without pictures.' + 
+        
+        /*
         '<h2>Statistics</h2>' + 
         '<table class="wikitable">' + 
         '<tr><th>Featured</th><td id="stats-featured-images"></td>' + 
         '<th>Quality</th><td id="stats-quality-images"></td>' + 
         '<th>Total images</th><td id="stats-total-images"></td></tr>' + 
         '</table>' +
+        
         '<h2>Geolocate an image</h2>' + 
         'Add coordinates to an image in Wikimedia Commons:' +
         '<ul><li>TODO</li></ul>' +
+        
         '<h2>Move marker to new location</h2>' + 
         'Modify coordinates of an image dragging the marker:' + 
         '<ul><li>TODO</li></ul>' +
+        */
+        
         '<h2>See also</h2>' + 
-        '<ul><li><a href="https://en.wikipedia.org/wiki/User:Emijrp/All_human_knowledge">All human knowledge</a></li>' +
-        '<li><a href="http://tools.wmflabs.org/wmcounter/">Wikimedia projects edit counter</a></li></ul>' +
+        '<ul>' + 
+        '<li><a href="//tools.wmflabs.org/wlm-maps/">Wiki Loves Monuments map</a></li>' +
+        '<li><a href="//en.wikipedia.org/wiki/User:Emijrp/All_human_knowledge">All human knowledge</a></li>' +
+        '<li><a href="//tools.wmflabs.org/wmcounter/">Wikimedia projects edit counter</a></li>' +
+        '</ul>' +
         ''
         );
     
@@ -229,13 +239,14 @@ function askForCoverage() {
 
 function askForImageMarkers() {
     if (map.getZoom() < 10) { return }
-    
+
     var data='bbox=' + map.getBounds().toBBoxString();
     $.ajax({
         url: 'ajaximages.php',
         dataType: 'json',
         data: data,
-        success: showImageMarkers
+        success: showImageMarkers, 
+        error: function(e) { alert(e); }
     });
 }
 
