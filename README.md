@@ -1,7 +1,7 @@
 commons-coverage
 ================
 
-A map for Wikimedia Commons coverage. I would like a Wikimedia Commons with one image per km2 at least.
+A map for Wikimedia Commons coverage. Imagine Wikimedia Commons having one image per square km at least.
 
 It is available in https://tools.wmflabs.org/commons-coverage/
 
